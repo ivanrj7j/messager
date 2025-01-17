@@ -5,6 +5,7 @@ from flask_cors import CORS
 
 from src import socket
 from src import main
+from src.blueprints import userBlueprint
 # importing all the modules 
 
 load_dotenv()
@@ -18,6 +19,7 @@ cors = CORS(app)
 
 socket.init_app(app)
 app.register_blueprint(main)
+app.register_blueprint(userBlueprint)
 # setting up the apps 
 
 

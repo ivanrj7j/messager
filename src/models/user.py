@@ -15,6 +15,13 @@ class User:
             "communities": []
         }
 
+        checkUser = self.collection.find_one({
+            "username": self.username
+        })
+        
+        if checkUser is not None:
+            raise ValueError("Username already exists")
+        
         self.collection.insert_one(data)
         self.loggedIn = True
 
@@ -28,10 +35,10 @@ class User:
             "pasword": password
         })
 
-        if result is not None:
-            self.loggedIn = True
-
-        raise ValueError("The given username and passwords do not match")
+        if result is None:
+            raise ValueError("The given username and passwords do not match")
+        
+        self.loggedIn = True
 
     @property
     def details(self) -> dict:
