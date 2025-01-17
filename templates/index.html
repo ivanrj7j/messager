@@ -10,6 +10,7 @@
 <body>
     <div class="container">
         <input type="text" placeholder="username" class="username">
+        <input type="text" name="" id="" class="communityName" placeholder="community">
 
         <ul class="messages">
 
@@ -22,10 +23,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.js"></script>
     <script>
         const userNameInput = document.querySelector(".username");
+        const communityNameInput = document.querySelector(".communityName");
         const messages = document.querySelector(".messages");
         const textInput = document.querySelector(".text");
 
-        const socket = io({ autoConnect: false });
+        let socket = io({ autoConnect: false });
+
+        let communityName, username;
 
         const addMessage = (content) => {
             const li = document.createElement("li");
@@ -33,18 +37,20 @@
             messages.appendChild(li);
         };
 
-        userNameInput.addEventListener("keydown", (e) => {
+        communityNameInput.addEventListener("keydown", (e) => {
             if (e.key === "Enter") {
-                const username = userNameInput.value;
+                username = userNameInput.value;
+                communityName = communityNameInput.value;
 
                 socket.connect();
 
 
                 socket.on("connect", function () {
-                    socket.emit("user_join", username);
+                    socket.emit("user_join", {community: communityName, username: username});
                 });
 
                 userNameInput.style.display = "none";
+                communityNameInput.style.display = "none";
                 textInput.style.display = "block";
             }
         });
@@ -52,7 +58,11 @@
         textInput.addEventListener("keydown", (e) => {
             if (e.key === "Enter") {
                 const message = textInput.value;
-                socket.emit("message", message);
+                socket.emit("message", {
+                    community: communityName,
+                    message: message,
+                    user: username
+                });
                 textInput.value = "";
             }
         });

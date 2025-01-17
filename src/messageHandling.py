@@ -1,10 +1,9 @@
 from flask_socketio import SocketIO
 from flask import request
-from flask_socketio import emit
+from flask_socketio import emit, join_room
 
 socket = SocketIO()
 
-users = {}
 
 @socket.on("connect")
 def connectHandler():
@@ -12,11 +11,17 @@ def connectHandler():
 
 
 @socket.on("user_join")
-def handleUserJoin(username):
+def handleUserJoin(data):
+    username = data["username"]
+    community = data["community"]
+    join_room(community)
     print(f"User {username} joined!")
-    users[request.sid] = username
-    emit("user_connected", {"user": username}, broadcast=True)
+    
+    emit("user_connected", {"user": username}, to=community)
 
 @socket.on("message")
-def handleSendMessage(message):
-    emit("chat", {"message": message, "user": users[request.sid]}, broadcast=True)
+def handleSendMessage(data):
+    message = data["message"]
+    join_room(data["community"])
+    user = data["user"]
+    emit("chat", {"message": message, "user": user}, to=data["community"])
