@@ -75,6 +75,14 @@
             addMessage(`${data.user} Joined the party!`);
         });
 
+        socket.on("invalid_community", ()=>{
+            location.reload();
+        });
+
+        socket.on("invalid_user", ()=>{
+            location.reload();
+        });
+
 
     </script>
 </body>

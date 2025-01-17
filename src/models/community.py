@@ -105,3 +105,14 @@ class Community:
 
         if result.modified_count == 0:
             raise ValueError("User not found in the community")
+        
+    def validateUser(self, username:str):
+        if not self.validated:
+            raise ValueError("Community not validated yet")
+        
+        userExistsInCommunity = self.collection.find_one({
+            "name": self.name,
+            "members": {"$in": [username]}
+        })
+
+        return userExistsInCommunity is not None
