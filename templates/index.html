@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEST UI</title>
+</head>
+
+<body>
+    <div class="container">
+        <input type="text" placeholder="username" class="username">
+
+        <ul class="messages">
+
+        </ul>
+
+        <input type="text" class="text" style="display: none;" placeholder="message...">
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.js"></script>
+    <script>
+        const userNameInput = document.querySelector(".username");
+        const messages = document.querySelector(".messages");
+        const textInput = document.querySelector(".text");
+
+        const socket = io({ autoConnect: false });
+
+        const addMessage = (content) => {
+            const li = document.createElement("li");
+            li.innerText = content;
+            messages.appendChild(li);
+        };
+
+        userNameInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                const username = userNameInput.value;
+
+                socket.connect();
+
+
+                socket.on("connect", function () {
+                    socket.emit("user_join", username);
+                });
+
+                userNameInput.style.display = "none";
+                textInput.style.display = "block";
+            }
+        });
+
+        textInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                const message = textInput.value;
+                socket.emit("message", message);
+                textInput.value = "";
+            }
+        });
+
+        socket.on("chat", (data)=>{
+            addMessage(`${data.user}: ${data.message}`);
+        });
+
+        socket.on("user_connected", (data)=>{
+            addMessage(`${data.user} Joined the party!`);
+        });
+
+
+    </script>
+</body>
+
+</html>
