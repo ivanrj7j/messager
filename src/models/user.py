@@ -7,6 +7,13 @@ class User:
         self.loggedIn = False
         self.collection = collection
 
+    def exists(self):
+        result = self.collection.find_one({
+            "username": self.username
+        })
+
+        return result is not None
+
     def register(self, password:str) -> None:
         data = {
             "username": self.username,
